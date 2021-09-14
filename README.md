@@ -6,7 +6,7 @@ I had enough of grievers in game!
 * Play Grand Theft Auto Online with friends only.
 * Detect other players IP in session, with more details (lastseen, location)
 * Whitelist IP addresses and play with your friends without modder/hackers
-* Auto saves and leave notes your whitelist IP list
+* Auto saves and leave notes for whitelist IP list
 
 ### Installation
 1. Install [npcap](https://nmap.org/npcap/) for packet sniffing
