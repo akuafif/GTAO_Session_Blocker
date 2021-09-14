@@ -21,6 +21,9 @@ I had enough of grievers in game!
 5. Whitelist their IP (right click the table below)
 6. Turn on firewall
 
+### Screenshot
+![screenshot](https://cdn.discordapp.com/attachments/334877847124443136/887323851648811038/Capture.PNG)
+
 # Requirements
 
 ### Drivers
