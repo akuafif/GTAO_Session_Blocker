@@ -10,7 +10,8 @@ I had enough of grievers in game!
 
 ### Installation
 1. Install [npcap](https://nmap.org/npcap/) for packet sniffing
-2. Run `GTAO_Session_Blocker.exe`
+2. Download [the latest .7z file release](https://github.com/fscene8/GTAO_Session_Blocker/releases) 
+2. Extract and run `GTAO_Session_Blocker.exe`
 
 ### How to use
 1. Run GTA Online
