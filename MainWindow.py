@@ -1,3 +1,4 @@
+from scapy.modules.six import Module_six_moves_urllib_response
 from SnifferThread import SnifferThread
 from tksheet import Sheet
 from tkinter import messagebox
@@ -17,10 +18,9 @@ class MainWindow(tk.Tk):
         self.runSnifferThread()
         self.firewallEnabled = False
         self.localIP = ''
-        self.ipDictonary = {}
         self.ipWhiteListDictionary = {}
 
-        self.title('GTA Session Blocker')
+        self.title('GTAO Session Blocker')
         
         self.setMenuElements()
         self.setTopElements()
@@ -42,6 +42,8 @@ class MainWindow(tk.Tk):
 
     def runSnifferThread(self):
         self.snifferThread = SnifferThread()
+
+        # Kills the thread if parent dies
         self.snifferThread.daemon = True
         self.snifferThread.start()
         
@@ -75,6 +77,15 @@ class MainWindow(tk.Tk):
         # add the Help menu to the menubar
         menubar.add_cascade(label="Help",menu=help_menu)
 
+    def getGTAVPath(self):
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                if proc.name() == "GTA5.exe":
+                    return proc.cwd()+'\\'+ 'GTA5.exe'
+            except psutil.AccessDenied:
+                continue
+        return ''
+
     def setTopElements(self):
         self.topframe = tk.Frame(self)
 
@@ -82,12 +93,7 @@ class MainWindow(tk.Tk):
         tk.Label(self.topframe, text="GTA V exe path").grid(row=0,column=0, padx=10, pady=2, sticky="w")
         self.entryGTAPath = tk.Entry(self.topframe, width=30)
         self.entryGTAPath.grid(row=0, column=1, padx=5, pady=2, columnspan=2,  sticky="nwe")
-        for proc in psutil.process_iter(['pid', 'name']):
-            try:
-                if proc.name() == "GTA5.exe":
-                    self.entryGTAPath.insert(0,proc.cwd()+'\\'+ 'GTA5.exe')
-            except psutil.AccessDenied:
-                continue
+        self.entryGTAPath.insert(0,self.getGTAVPath())
         self.openfiledialog = ttk.Button(self.topframe,text='Get GTA V Path',command=self.openGTA5Path,width=18)
         self.openfiledialog.grid(row=0, column=4, padx=5, pady=2,  sticky="nwe")
 
@@ -108,7 +114,7 @@ class MainWindow(tk.Tk):
 
         # Row 8
         tk.Label(self.topframe, text="Step 1 >").grid(row=8,column=0, padx=10, pady=2, sticky="w")
-        tk.Label(self.topframe, text="Suspend GTA and be the host session").grid(row=8,column=1, padx=10, pady=2,columnspan=2, sticky="w")
+        tk.Label(self.topframe, text="Suspend GTA to be the alone and be host session").grid(row=8,column=1, padx=10, pady=2,columnspan=2, sticky="w")
         self.btnSuspendProc = tk.Button(self.topframe, text="Suspend for 10 sec",command=self.suspendGTA)
         self.btnSuspendProc.grid(row=8,column=4, padx=5, pady=2, columnspan=1, sticky="we")
 
@@ -119,12 +125,12 @@ class MainWindow(tk.Tk):
         # Row 10     
         tk.Label(self.topframe, text="Step 3 >").grid(row=10,column=0, padx=10, pady=2, sticky="w")
         tk.Label(self.topframe, text="Toggle on/off the firewall").grid(row=10,column=1, padx=10, pady=2,columnspan=2, sticky="w")
-        self.EnableFirewall = tk.Button(self.topframe, text="Firewall not actived", command=self.togglefirewall,background="yellow")
+        self.EnableFirewall = tk.Button(self.topframe, text="Firewall OFF", command=self.togglefirewall,background="yellow",foreground="black")
         self.EnableFirewall.grid(row=10,column=4, padx=5, pady=2, columnspan=1, sticky="we")
         
         # Row 12    
-        tk.Label(self.topframe, text="IP in session. Right click and Add to White List").grid(row=12,column=0, padx=10, pady=2,columnspan=3, sticky="w")
-        self.btnRefreshIPData = tk.Button(self.topframe, text="Clear IP table", command=self.clearIPTable)
+        tk.Label(self.topframe, text="IP in session. Right click an IP address and Add to White List").grid(row=12,column=0, padx=10, pady=2,columnspan=3, sticky="w")
+        self.btnRefreshIPData = tk.Button(self.topframe, text="Clear table below", command=self.clearIPTable)
         self.btnRefreshIPData.grid(row=12,column=4, padx=5, pady=2, columnspan=1, sticky="we")
         #self.topframe.pack(padx=10,pady=10)
         self.topframe.grid(row = 0, column = 0, sticky = "n")
@@ -135,11 +141,11 @@ class MainWindow(tk.Tk):
                             page_up_down_select_row = True,
                             expand_sheet_if_paste_too_big = True,
                             headers = [f"{c}" for c in headers],
-                            height = 200
+                            height = 180
                             )
         
-        self.ipwhitelistsheet.column_width(column = 0, width = 100) 
-        self.ipwhitelistsheet.column_width(column = 1, width = 200)                            
+        self.ipwhitelistsheet.column_width(column = 0, width = 120) 
+        self.ipwhitelistsheet.column_width(column = 1, width = 250)                            
         self.ipwhitelistsheet.enable_bindings(("single_select", #"single_select" or "toggle_select"
                                     "drag_select",   #enables shift click selection as well
                                     "select_all",
@@ -174,7 +180,7 @@ class MainWindow(tk.Tk):
                             height = 300 #height and width arguments are optional
                             )
         
-        self.ipscannersheet.column_width(column = 0, width = 100) 
+        self.ipscannersheet.column_width(column = 0, width = 120) 
         self.ipscannersheet.column_width(column = 1, width = 50)  
         self.ipscannersheet.column_width(column = 2, width = 60) 
         self.ipscannersheet.column_width(column = 3, width = 60)  
@@ -202,14 +208,19 @@ class MainWindow(tk.Tk):
                                     ))
         self.ipscannerframe.grid(row = 1, column = 0, sticky = "swe")
         self.ipscannersheet.grid(row = 1, column = 0, sticky = "swe")
-        self.ipscannersheet.popup_menu_add_command("Add to whitelist", self.rcAddToWhitelist) 
+        self.ipscannersheet.popup_menu_add_command("Add To Whitelist", self.rcAddToWhitelist) 
+        self.ipscannersheet.popup_menu_add_command("Delete Row Entry", self.rcDeleteRow) 
     
     def openGTA5Path(self):
-        # file type
-        filetypes = ('exe files', '*.exe')
-        # show the open file dialog
-        f = fd.askopenfilename(title="GTA V Exe Path", filetypes =(("GTA5", "GTA5.exe"),("EXE","*.exe")))
-        self.entryGTAPath.insert(0, f.replace('/','\\'))
+        gtapath = self.getGTAVPath()
+        if gtapath == '':
+            # file type
+            filetypes = ('exe files', '*.exe')
+            # show the open file dialog
+            f = fd.askopenfilename(title="GTA V Exe Path", filetypes =(("GTA5", "GTA5.exe"),("EXE","*.exe")))
+            self.entryGTAPath.insert(0,f.replace('/','\\'))
+        else:
+            self.entryGTAPath.insert(0,gtapath)
    
     def addIPManually(self):
         if not len(self.entryAddIP.get().strip()) or not self.isValidIP(self.entryAddIP.get().strip()) :
@@ -235,30 +246,68 @@ class MainWindow(tk.Tk):
             return False
 
     def rcAddToWhitelist(self, event = None):
-        iptoadd = self.ipscannersheet.get_cell_data(self.ipscannersheet.get_currently_selected()[0], 0)
+        if self.ipscannersheet.get_currently_selected()[0] == 'row':
+            iptoadd = self.ipscannersheet.get_cell_data(self.ipscannersheet.get_currently_selected()[1], 0)
+        elif self.ipscannersheet.get_currently_selected()[0] == 'column':
+            messagebox.showinfo('Column Selected', 'Please select a row. Not a column!')
+            return False
+        else: 
+            iptoadd = self.ipscannersheet.get_cell_data(self.ipscannersheet.get_currently_selected()[0], 0)
+
         if self.ipwhitelistsheet.total_rows() > 0:
             for i in range(self.ipwhitelistsheet.total_rows()):
                 if iptoadd in self.ipwhitelistsheet.get_cell_data(i,0):
                     messagebox.showinfo('Information',"IP is already in the white list.")
                     return False
         self.ipwhitelistsheet.insert_row([iptoadd,''])
-        self.ipwhitelistsheet.display_columns( refresh = True)
+        self.ipwhitelistsheet.display_columns(refresh = True)
         self.ipWhiteListDictionary[iptoadd] = ''
         self.saveWhiteList()
+        return True
+
+    def rcDeleteRow(self):
+        if self.ipscannersheet.get_currently_selected()[0] == 'row':
+            x = self.ipscannersheet.get_currently_selected()[1]
+            iptopop = self.ipscannersheet.get_cell_data(self.ipscannersheet.get_currently_selected()[1], 0)
+        elif self.ipscannersheet.get_currently_selected()[0] == 'column':
+            messagebox.showinfo('Column Selected', 'Please select a row. Not a column!')
+            return False
+        else: 
+            x = self.ipscannersheet.get_currently_selected()[0]
+            iptopop = self.ipscannersheet.get_cell_data(self.ipscannersheet.get_currently_selected()[0], 0)
+        
+        self.snifferThread.ipDictionary.pop(iptopop) 
+        self.ipscannersheet.delete_row(x)    
+        self.ipscannersheet.display_columns(refresh = True)
 
     def whitelistInsertNotes(self):
-        # the input dialog
-        USER_INP = tkinter.simpledialog.askstring(title="Insert Note",prompt="Please key in your notes below:")
+        if self.ipwhitelistsheet.get_currently_selected()[0] == 'row':
+            x = self.ipwhitelistsheet.get_currently_selected()[1]
+        elif self.ipwhitelistsheet.get_currently_selected()[0] == 'column':
+            messagebox.showinfo('Column Selected', 'Please select a row. Not a column!')
+            return False
+        else: 
+            x = self.ipwhitelistsheet.get_currently_selected()[0]
 
-        self.ipwhitelistsheet.set_cell_data(self.ipwhitelistsheet.get_currently_selected()[0], 1,USER_INP)
-        self.ipwhitelistsheet.display_columns( refresh = True)
-        self.ipWhiteListDictionary[self.ipwhitelistsheet.get_cell_data(self.ipwhitelistsheet.get_currently_selected()[0], 0)] = USER_INP
+        # the input dialog
+        USER_INP = tkinter.simpledialog.askstring(title="Insert Note",prompt="Please key in your note below:")
+        self.ipwhitelistsheet.set_cell_data(x, 1,USER_INP)
+        self.ipwhitelistsheet.display_columns(refresh = True)
+        self.ipWhiteListDictionary[self.ipwhitelistsheet.get_cell_data(x, 0)] = USER_INP
         self.saveWhiteList()
 
     def whitelistDeleteEntry(self):
-        self.ipWhiteListDictionary.pop(self.ipwhitelistsheet.get_cell_data(self.ipwhitelistsheet.get_currently_selected()[0], 0))
-        self.ipwhitelistsheet.delete_row(self.ipwhitelistsheet.get_currently_selected()[0])    
-        self.ipwhitelistsheet.display_columns( refresh = True)
+        if self.ipwhitelistsheet.get_currently_selected()[0] == 'row':
+            x = self.ipwhitelistsheet.get_currently_selected()[1]
+        elif self.ipwhitelistsheet.get_currently_selected()[0] == 'column':
+            messagebox.showinfo('Column Selected', 'Please select a row. Not a column!')
+            return False
+        else: 
+            x = self.ipwhitelistsheet.get_currently_selected()[0]
+
+        self.ipWhiteListDictionary.pop(self.ipwhitelistsheet.get_cell_data(x, 0))
+        self.ipwhitelistsheet.delete_row(x)    
+        self.ipwhitelistsheet.display_columns(refresh = True)
         self.saveWhiteList()
        
     def suspendGTA(self):
@@ -284,7 +333,7 @@ class MainWindow(tk.Tk):
     def togglefirewall(self):
         if self.firewallEnabled:
             firewall.delete_firewall_rule()
-            self.EnableFirewall.configure(text="Firewall not actived",background="yellow",foreground="black")
+            self.EnableFirewall.configure(text="Firewall OFF",background="yellow",foreground="black")
             self.firewallEnabled = False
         else:
             programpath = self.entryGTAPath.get().strip()
@@ -292,13 +341,10 @@ class MainWindow(tk.Tk):
                 self.enableFirewall(programpath)
                 time.sleep(0.5)
 
-                self.EnableFirewall.configure(text="Firewall actived",background="green",foreground="white")
+                self.EnableFirewall.configure(text="Firewall ON",background="green",foreground="white")
                 self.firewallEnabled = True
             else:
                 messagebox.showinfo('Missing Game Path','Missing/invalid GTA Online EXE path!')
-        
-
-    #def disableFirewall(self):
 
     def enableFirewall(self, programpath):
         success = firewall.add_firewall_rule(programpath)
@@ -318,8 +364,8 @@ class MainWindow(tk.Tk):
         if self.ipscannersheet.total_rows() > 0:
             for i in range(self.ipscannersheet.total_rows()):
                 self.ipscannersheet.delete_row(self.ipscannersheet.total_rows()-1)  
-        for ip, info in self.snifferThread.getIPDictionary().items():
-            self.ipscannersheet.insert_row([ip, info.country, info.firstseen.strftime("%H:%M:%S"), info.lastseen.strftime("%H:%M:%S"), str(datetime.now() - info.lastseen).split(".")[0] ,info.region, info.city])
+        for ip, gtaIPData in self.snifferThread.getIPDictionary().items():
+            self.ipscannersheet.insert_row([ip, gtaIPData.country, gtaIPData.firstseen.strftime("%H:%M:%S"), gtaIPData.lastseen.strftime("%H:%M:%S"), str(datetime.now() - gtaIPData.lastseen).split(".")[0] ,gtaIPData.region, gtaIPData.city])
         self.ipscannersheet.display_columns( refresh = True)
         self.after(1000, self.printDictionary)
 

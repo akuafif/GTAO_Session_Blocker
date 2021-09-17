@@ -1,8 +1,8 @@
 import socket
 from GTAIP import GTAIP
-from scapy.all import *
-from ip2geotools.databases.noncommercial import DbIpCity
+from scapy.all import sniff,IP
 from datetime import datetime
+from threading import Thread
 
 class SnifferThread(Thread):
     def __init__(self):
@@ -37,16 +37,13 @@ class SnifferThread(Thread):
         self.ipDictionary = {}
         localIP = self.getlocalIPAddress()
         while True:
-            packet = sniff(filter="udp and port 6672", prn=self.pc, store=1, count=1) # GTA V Online UDP default Port is 6672
-            #y = x[0][IP].src
+            # Checks for 6672 
+            packet = sniff(filter="udp and port 6672", prn=self.pc, store=1, count=1) 
             dest = packet[0][IP].dst
             if dest == localIP: 
                 pass
             else:
                 if not dest in self.ipDictionary.keys():
-                    try:
-                        self.ipDictionary[dest] = GTAIP(dest,datetime.now(), datetime.now(), DbIpCity.get(dest, api_key='free').country, DbIpCity.get(dest, api_key='free').region, DbIpCity.get(dest, api_key='free').city)
-                    except:
-                        self.ipDictionary[dest] = GTAIP(dest,datetime.now(), datetime.now(), DbIpCity.get(dest, api_key='free').country, "Spoof", "IP")
+                        self.ipDictionary[dest] = GTAIP(dest)
                 else:
-                    self.ipDictionary[dest].lastseen = datetime.now()
+                    self.ipDictionary[dest]._lastseen = datetime.now()

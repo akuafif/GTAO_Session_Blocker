@@ -8,9 +8,8 @@ def kill_proc_tree():
         firewall.delete_firewall_rule()
         parent = psutil.Process(pid)
         
-        print('cleanup done')
-        parent.kill()
-    
+        print('Cleanup done')
+        parent.kill()  
     except:
         print("Something really went wrong")
 

@@ -226,5 +226,5 @@ def delete_firewall_rule():
     netsh_add_firewall_command = f'''netsh advfirewall firewall delete rule name="{firewall_rule_name}" '''
     in_command = Popen(netsh_add_firewall_command, stdout=PIPE, stderr=PIPE, shell=True)
     output_message, _ = in_command.communicate()
-    print('rule deleted')
+    print('Rule deleted')
     return "Ok." in output_message.decode().strip()
