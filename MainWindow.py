@@ -1,4 +1,3 @@
-from scapy.modules.six import Module_six_moves_urllib_response
 from SnifferThread import SnifferThread
 from tksheet import Sheet
 from tkinter import messagebox
@@ -17,6 +16,7 @@ class MainWindow(tk.Tk):
 
         self.runSnifferThread()
         self.firewallEnabled = False
+        self.snifferThreadRunning = True
         self.localIP = ''
         self.ipWhiteListDictionary = {}
 
@@ -90,48 +90,50 @@ class MainWindow(tk.Tk):
         self.topframe = tk.Frame(self)
 
         # Row 0
-        tk.Label(self.topframe, text="GTA V exe path").grid(row=0,column=0, padx=10, pady=2, sticky="w")
+        tk.Label(self.topframe, text="GTA V exe path").grid(row=0,column=0, padx=5, pady=2, sticky="w")
         self.entryGTAPath = tk.Entry(self.topframe, width=30)
-        self.entryGTAPath.grid(row=0, column=1, padx=5, pady=2, columnspan=2,  sticky="nwe")
+        self.entryGTAPath.grid(row=0, column=1, padx=5, pady=2, columnspan=3,  sticky="nwe")
         self.entryGTAPath.insert(0,self.getGTAVPath())
         self.openfiledialog = ttk.Button(self.topframe,text='Get GTA V Path',command=self.openGTA5Path,width=18)
         self.openfiledialog.grid(row=0, column=4, padx=5, pady=2,  sticky="nwe")
 
         # Row 1
-        tk.Label(self.topframe, text="Add IP Manually").grid(row=1,column=0, padx=10, pady=2, sticky="w")
+        tk.Label(self.topframe, text="Add IP Manually").grid(row=1,column=0, padx=5, pady=2, sticky="w")
         self.entryAddIP = tk.Entry(self.topframe,width=30)
-        self.entryAddIP.grid(row=1, column=1, padx=5, pady=2, columnspan=2,  sticky="nwe")
+        self.entryAddIP.grid(row=1, column=1, padx=5, pady=2, columnspan=3,  sticky="nwe")
         self.btnAddIP = tk.Button(self.topframe, text="Add IP to whitelist",command=self.addIPManually,width=15)
         self.btnAddIP.grid(row=1,column=4, padx=5, pady=2, sticky="nwe")
 
         # Row 2        
-        tk.Label(self.topframe, text="Whitelist ->").grid(row=2,column=0, padx=10, pady=2,rowspan=1, sticky="w")
-        tk.Label(self.topframe, text="Right-Click to delete").grid(row=3,column=0, padx=10, rowspan=1, sticky="sw")
-        tk.Label(self.topframe, text="or insert/edit note").grid(row=4,column=0, padx=10, rowspan=1, sticky="nw")
-        
+        tk.Label(self.topframe, text="Whitelist ->").grid(row=2,column=0, padx=5, pady=2,rowspan=1, sticky="w")
+        tk.Label(self.topframe, text="Right-Click to delete").grid(row=3,column=0, padx=5, rowspan=1, sticky="sw")
+        tk.Label(self.topframe, text="or insert/edit note").grid(row=4,column=0, padx=5, rowspan=1, sticky="nw")
+
         # Set whitelist table
         self.setWhiteListTable()
 
         # Row 8
-        tk.Label(self.topframe, text="Step 1 >").grid(row=8,column=0, padx=10, pady=2, sticky="w")
-        tk.Label(self.topframe, text="Suspend GTA to be the alone and be host session").grid(row=8,column=1, padx=10, pady=2,columnspan=2, sticky="w")
+        tk.Label(self.topframe, text="Step 1 >").grid(row=8,column=0, padx=5, pady=2, sticky="w")
+        tk.Label(self.topframe, text="Suspend GTA to be the alone and be host session").grid(row=8,column=1, padx=5, pady=2,columnspan=2, sticky="w")
         self.btnSuspendProc = tk.Button(self.topframe, text="Suspend for 10 sec",command=self.suspendGTA)
         self.btnSuspendProc.grid(row=8,column=4, padx=5, pady=2, columnspan=1, sticky="we")
 
         # Row 9     
-        tk.Label(self.topframe, text="Step 2 >").grid(row=9,column=0, padx=10, pady=2, sticky="w")
-        tk.Label(self.topframe, text="Invite your friend to join your session and whitelist their IP").grid(row=9,column=1, padx=10, pady=2,columnspan=4, sticky="w")
+        tk.Label(self.topframe, text="Step 2 >").grid(row=9,column=0, padx=5, pady=2, sticky="w")
+        tk.Label(self.topframe, text="Invite your friends to join your session and whitelist their IP").grid(row=9,column=1, padx=5, pady=2,columnspan=4, sticky="w")
         
         # Row 10     
-        tk.Label(self.topframe, text="Step 3 >").grid(row=10,column=0, padx=10, pady=2, sticky="w")
-        tk.Label(self.topframe, text="Toggle on/off the firewall").grid(row=10,column=1, padx=10, pady=2,columnspan=2, sticky="w")
+        tk.Label(self.topframe, text="Step 3 >").grid(row=10,column=0, padx=5, pady=2, sticky="w")
+        tk.Label(self.topframe, text="Toggle on the firewall after they have joined").grid(row=10,column=1, padx=5, pady=2,columnspan=2, sticky="w")
         self.EnableFirewall = tk.Button(self.topframe, text="Firewall OFF", command=self.togglefirewall,background="yellow",foreground="black")
         self.EnableFirewall.grid(row=10,column=4, padx=5, pady=2, columnspan=1, sticky="we")
         
         # Row 12    
-        tk.Label(self.topframe, text="IP in session. Right click an IP address and Add to White List").grid(row=12,column=0, padx=10, pady=2,columnspan=3, sticky="w")
+        tk.Label(self.topframe, text="IP in session. Right click an IP address and Add to White List").grid(row=12,column=0, padx=5, pady=2,columnspan=2, sticky="w")
+        self.btnToggleScanIP = tk.Button(self.topframe, text="Scan ON", command=self.toggleScanIP, background="green",foreground="white")
+        self.btnToggleScanIP.grid(row=12,column=2, padx=5, pady=1, columnspan=2, sticky="we")
         self.btnRefreshIPData = tk.Button(self.topframe, text="Clear table below", command=self.clearIPTable)
-        self.btnRefreshIPData.grid(row=12,column=4, padx=5, pady=2, columnspan=1, sticky="we")
+        self.btnRefreshIPData.grid(row=12,column=4, padx=5, pady=2, sticky="we")
         #self.topframe.pack(padx=10,pady=10)
         self.topframe.grid(row = 0, column = 0, sticky = "n")
 
@@ -169,7 +171,7 @@ class MainWindow(tk.Tk):
         self.ipwhitelistsheet.popup_menu_add_command("Delete Entry", self.whitelistDeleteEntry)  
 
     def setIPScannerTable(self):
-        headers = ['IP Address','Country', 'Firstseen', 'Lastseen', 'Ago', ' Region', 'City']
+        headers = ['IP Address','Country', 'Firstseen', 'Lastseen', 'Ago', 'Packets In', 'Region', 'City']
         self.ipscannerframe = tk.Frame(self)
         self.ipscannerframe.grid_columnconfigure(0, weight = 1)
         self.ipscannerframe.grid_rowconfigure(0, weight = 1)
@@ -185,9 +187,9 @@ class MainWindow(tk.Tk):
         self.ipscannersheet.column_width(column = 2, width = 60) 
         self.ipscannersheet.column_width(column = 3, width = 60)  
         self.ipscannersheet.column_width(column = 4, width = 60)  
-        self.ipscannersheet.column_width(column = 5, width = 80)  
-        self.ipscannersheet.column_width(column = 5, width = 150)   
-        self.ipscannersheet.column_width(column = 6, width = 350)                           
+        self.ipscannersheet.column_width(column = 5, width = 60)   
+        self.ipscannersheet.column_width(column = 6, width = 150)   
+        self.ipscannersheet.column_width(column = 7, width = 350)                           
         self.ipscannersheet.enable_bindings(("single_select", #"single_select" or "toggle_select"
                                     "drag_select",   #enables shift click selection as well
                                     "select_all",
@@ -334,17 +336,18 @@ class MainWindow(tk.Tk):
         if self.firewallEnabled:
             firewall.delete_firewall_rule()
             self.EnableFirewall.configure(text="Firewall OFF",background="yellow",foreground="black")
-            self.firewallEnabled = False
         else:
             programpath = self.entryGTAPath.get().strip()
             if os.path.isfile(programpath):
                 self.enableFirewall(programpath)
                 time.sleep(0.5)
-
                 self.EnableFirewall.configure(text="Firewall ON",background="green",foreground="white")
-                self.firewallEnabled = True
+                
+                self.snifferThreadRunning = True
+                self.toggleScanIP()
             else:
                 messagebox.showinfo('Missing Game Path','Missing/invalid GTA Online EXE path!')
+        self.firewallEnabled = not self.firewallEnabled 
 
     def enableFirewall(self, programpath):
         success = firewall.add_firewall_rule(programpath)
@@ -356,17 +359,26 @@ class MainWindow(tk.Tk):
         time.sleep(2)
         firewall.enable_firewall_rule()
 
+    def toggleScanIP(self):
+        if self.snifferThreadRunning:
+            self.snifferThread.pause()
+            self.btnToggleScanIP.configure(text="Scan OFF",background="yellow",foreground="black")
+        else: 
+            self.snifferThread.resume()
+            self.btnToggleScanIP.configure(text="Scan ON",background="green",foreground="white")
+        self.snifferThreadRunning = not self.snifferThreadRunning
+
     def clearIPTable(self):
         self.snifferThread.clearIPDictionary()
-        self.ipscannersheet.display_columns( refresh = True )
+        self.ipscannersheet.display_columns(refresh = True )
 
     def printDictionary(self) -> None:
         if self.ipscannersheet.total_rows() > 0:
             for i in range(self.ipscannersheet.total_rows()):
                 self.ipscannersheet.delete_row(self.ipscannersheet.total_rows()-1)  
         for ip, gtaIPData in self.snifferThread.getIPDictionary().items():
-            self.ipscannersheet.insert_row([ip, gtaIPData.country, gtaIPData.firstseen.strftime("%H:%M:%S"), gtaIPData.lastseen.strftime("%H:%M:%S"), str(datetime.now() - gtaIPData.lastseen).split(".")[0] ,gtaIPData.region, gtaIPData.city])
-        self.ipscannersheet.display_columns( refresh = True)
+            self.ipscannersheet.insert_row([ip, gtaIPData.country, gtaIPData.firstseen.strftime("%H:%M:%S"), gtaIPData.lastseen.strftime("%H:%M:%S"), str(datetime.now() - gtaIPData.lastseen).split(".")[0], gtaIPData.packetsin,gtaIPData.region, gtaIPData.city])
+        self.ipscannersheet.display_columns(refresh = True)
         self.after(1000, self.printDictionary)
 
     def saveWhiteList(self):
@@ -379,5 +391,5 @@ class MainWindow(tk.Tk):
                 self.ipWhiteListDictionary = pickle.load(fp)
             for k,v in self.ipWhiteListDictionary.items():
                 self.ipwhitelistsheet.insert_row([k,v])
-        self.ipwhitelistsheet.display_columns( refresh = True)
+        self.ipwhitelistsheet.display_columns(refresh = True)
         

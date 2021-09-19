@@ -46,23 +46,31 @@ def HowTo():
 
     tk.Label(win, text="How to use",font=("Arial", 25)).grid(row=0, column=0, padx=5, pady=2, columnspan=2, sticky='ew')
 
-    tk.Label(win, text="Step 1 > ",font=("Arial", 11)).grid(row=1, column=0, padx=5, pady=2, sticky='w')
+    tk.Label(win, text="Step 1  > ",font=("Arial", 11)).grid(row=1, column=0, padx=5, pady=2, sticky='w')
     tk.Label(win, text="Run GTA Online", font=("Arial", 11)).grid(row=1, column=1, padx=5, pady=2, sticky='w')
     
-    tk.Label(win, text="Step 2 > ",font=("Arial", 11)).grid(row=2, column=0, padx=5, pady=2, sticky='w')
+    tk.Label(win, text="Step 2  > ",font=("Arial", 11)).grid(row=2, column=0, padx=5, pady=2, sticky='w')
     tk.Label(win, text="Suspend the process and be the session host", font=("Arial", 12)).grid(row=2, column=1, padx=5, pady=2, sticky='w')
 
-    tk.Label(win, text="Step 3 > ",font=("Arial", 11)).grid(row=3, column=0, padx=5, pady=2, sticky='w')
+    tk.Label(win, text="Step 3  > ",font=("Arial", 11)).grid(row=3, column=0, padx=5, pady=2, sticky='w')
     tk.Label(win, text="Invite your friend to your session and right click their IP to whitelist", font=("Arial", 11)).grid(row=3, column=1, padx=5, pady=2, sticky='w')
 
-    tk.Label(win, text="Step 4 > ",font=("Arial", 11)).grid(row=4, column=0, padx=5, pady=2, sticky='w')
-    tk.Label(win, text="Toggle on the firewall to prevent public from entering", font=("Arial", 11)).grid(row=4, column=1, padx=5, pady=2, sticky='w')
+    tk.Label(win, text="Step 4  > ",font=("Arial", 11)).grid(row=4, column=0, padx=5, pady=2, sticky='w')
+    tk.Label(win, text="Toggle on the firewall to prevent public from entering", font=("Arial", 11)).grid(row=4, column=1, padx=5, sticky='w')
 
-    tk.Label(win, text="Notes  > ",font=("Arial", 11)).grid(row=5, column=0, padx=5, pady=2, sticky='w')
-    tk.Label(win, text="You might need to toggle off your firewall for your friend to rejoin the session again", font=("Arial", 11)).grid(row=5, column=1, padx=5, pady=2, sticky='w')
+    tk.Label(win, text=" ", font=("Arial", 11)).grid(row=5, column=1, padx=5, sticky='w')
+
+    tk.Label(win, text="Notes 1 > ",font=("Arial", 11)).grid(row=6, column=0, padx=5, pady=2, sticky='sw')
+    tk.Label(win, text="How to know if I'm the host?", font=("Arial", 11)).grid(row=6, column=1, padx=5, pady=2, sticky='sw')
+    tk.Label(win, text="You will see that the 'Ago' column will be very low (0-8s) and you will be flooded ", font=("Arial", 11)).grid(row=7, column=1, padx=5, sticky='nw')
+    tk.Label(win, text="with Take-Two R* IP address from US, New York (192.168.x.x), untill you turned on the firewall.", font=("Arial", 11)).grid(row=8, column=1, padx=5, sticky='nw')
+    tk.Label(win, text="'Packet In' counter will be higher too for player IP in session if you're the host.", font=("Arial", 11)).grid(row=9, column=1, padx=5, sticky='nw')
+
+    tk.Label(win, text="Notes 2 > ",font=("Arial", 11)).grid(row=10, column=0, padx=5, pady=10, sticky='w')
+    tk.Label(win, text="You need to toggle off your firewall for your friend to rejoin the session again", font=("Arial", 11)).grid(row=10, column=1, padx=5, pady=10, sticky='w')
 
     b = ttk.Button(win, text="Okay", command=win.destroy)
-    b.grid(row=6, column=0, columnspan=2, padx=5, pady=2, sticky='s')
+    b.grid(row=11, column=0, columnspan=2, padx=5, pady=10, sticky='s')
 
     win.resizable(False, False) 
 

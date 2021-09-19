@@ -1,4 +1,5 @@
 import socket
+import time
 from GTAIP import GTAIP
 from scapy.all import sniff,IP
 from datetime import datetime
@@ -8,14 +9,24 @@ class SnifferThread(Thread):
     def __init__(self):
        # Call the Thread class's init function
         Thread.__init__(self)
-        self.ipDictionary = {}
+        self._keepalive = True
+        self._updatenew = True
+        self.__ipDictionary = {}
 
     def pc(self, packet):
         if packet.proto == 17:
             udp = packet.payload
 
     def stop(self):
-        self.keeprunning = False
+        self._keepalive = False
+
+    def pause(self):
+        self._updatenew = False
+        print('Pause thread')
+
+    def resume(self):
+        self._updatenew = True
+        print('Resume thread')
 
     def getlocalIPAddress(self) -> str:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -25,25 +36,27 @@ class SnifferThread(Thread):
         return ip
 
     def clearIPDictionary(self):
-        self.ipDictionary = {}
+        self.__ipDictionary = {}
     
     def getIPDictionary(self):
-        return self.ipDictionary
+        return self.__ipDictionary
         
     def run(self) -> None:
         print('Sniffer thread spawned')
 
-        self.keeprunning = True
-        self.ipDictionary = {}
+        self.__ipDictionary = {}
         localIP = self.getlocalIPAddress()
-        while True:
+        while self._keepalive:
+            time.sleep(1) 
             # Checks for 6672 
             packet = sniff(filter="udp and port 6672", prn=self.pc, store=1, count=1) 
             dest = packet[0][IP].dst
-            if dest == localIP: 
-                pass
-            else:
-                if not dest in self.ipDictionary.keys():
-                        self.ipDictionary[dest] = GTAIP(dest)
+            if dest != localIP: 
+                if self._updatenew:
+                    if dest not in self.__ipDictionary.keys():
+                            self.__ipDictionary[dest] = GTAIP(dest)
+                    else:
+                        (self.__ipDictionary[dest]).lastseen = datetime.now()
                 else:
-                    self.ipDictionary[dest]._lastseen = datetime.now()
+                    if dest in self.__ipDictionary.keys():
+                        (self.__ipDictionary[dest]).lastseen = datetime.now()
