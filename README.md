@@ -1,3 +1,6 @@
+# Archived
+As of July 26, 2022 [Quality of Life Updates](https://support.rockstargames.com/articles/8090412952339/GTAV-Title-Update-1-61-Notes-PS4-PS5-Xbox-One-Xbox-Series-X-S-PC) in GTAO, business content and sell missions can now be accessed in private sessions.
+
 # GTAO Session Blocker
 My first python project with multithreading and subprocess with GUI tkinter.
 I had enough of grievers in game!
